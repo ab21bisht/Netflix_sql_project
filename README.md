@@ -43,8 +43,8 @@ CREATE TABLE netflix
 ### 1. Count the Number of Movies vs TV Shows
 ```sql
 select 
-	type, 
-	count(*) as total_content
+type, 
+count(*) as total_content
 from netflix
 group by type;
 ```
@@ -52,18 +52,16 @@ group by type;
 ### 2. Find the Most Common Rating for Movies and TV Shows
 ```sql
 select 
-	type,
-	rating
+type,
+rating
 from
-(
-select 
-	type,
-	rating,
-	count(*),
-	rank()over(partition by type order by count(*) desc) as ranking
+(select 
+type,
+rating,
+count(*),
+rank()over(partition by type order by count(*) desc) as ranking
 from netflix
-group by 1,2
-) as t1
+group by 1,2) as t1
 where ranking = 1;
 ```
 
@@ -79,8 +77,8 @@ release_year = 2020;
 ### 4. Find the Top 5 Countries with the Most Content on Netflix
 ```sql
 select 
-	unnest(String_To_Array(country,',')) as new_country, 
-	count(show_id) as total_content
+unnest(String_To_Array(country,',')) as new_country, 
+count(show_id) as total_content
 from netflix
 where country is not null
 group by 1
@@ -91,8 +89,8 @@ limit 5;
 ### 5. Identify the Longest Movie
 ```sql
 select 
-	title,
-	duration
+title,
+duration
 from netflix
 where type = 'Movie' and duration is not null
 order by 2 desc;
@@ -127,8 +125,8 @@ duration > '5 Seasons';
 ### 9. Count the Number of Content Items in Each Genre
 ```sql
 select
-	unnest(String_To_Array(listed_in,',')) as Genre,
-	count(listed_in)
+unnest(String_To_Array(listed_in,',')) as Genre,
+count(listed_in)
 from netflix
 group by 1
 order by 2 desc;
@@ -137,9 +135,9 @@ order by 2 desc;
 ### 10.Find each year and the average numbers of content release in India on netflix, return top 5 year with highest avg content release!
 ```sql
 select 
-	EXTRACT (YEAR from TO_DATE(date_added, 'Month DD,yyyy')) as year,
-	count(*) as total_content,
-	round(count(*)::numeric/(select count(*) from netflix where country = 'India')::numeric*100,0) as average_content_count
+EXTRACT (YEAR from TO_DATE(date_added, 'Month DD,yyyy')) as year,
+count(*) as total_content,
+round(count(*)::numeric/(select count(*) from netflix where country = 'India')::numeric*100,0) as average_content_count
 from netflix
 where country ='India'
 group by 1
@@ -173,8 +171,8 @@ and release_year >= Extract(YEAR from CURRENT_DATE) - 10
 ### 14. Find the Top 10 Actors Who Have Appeared in the Highest Number of Movies Produced in India
 ```sql
 select 
-	unnest(String_To_Array(Casts,',')) as Actor,
-	count(Casts) as number_movies
+unnest(String_To_Array(Casts,',')) as Actor,
+count(Casts) as number_movies
 from netflix
 where country ='India'
 group by 1
@@ -186,10 +184,10 @@ limit 10;
 ```sql
 select 
 case 
-	when description ilike '%kill%'
-	or
-	description ilike '%violence%' then 'bad'
-	else 'good'
+when description ilike '%kill%'
+or
+description ilike '%violence%' then 'bad'
+else 'good'
 end as category,
 count(show_id) as count
 from netflix
